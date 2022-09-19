@@ -16,7 +16,9 @@ func InitRouter() *gin.Engine {
 
 	gin.SetMode(setting.RunMode)
 
-	apiv1 := r.Group("./api/v1")
+	//路由分组 127.0.0.1:8000/api/v1
+	//"relativePath" 中为分组路径，与文件夹无关
+	apiv1 := r.Group("api/v1")
 	{
 		//获取标签列表
 		apiv1.GET("/tags", v1.GetTags)
