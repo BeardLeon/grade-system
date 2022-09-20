@@ -44,4 +44,6 @@ replace (
 	github.com/EDDYCJY/go-gin-example/pkg/setting => ./pkg/setting
 	github.com/EDDYCJY/go-gin-example/pkg/util => ./pkg/util
 	github.com/EDDYCJY/go-gin-example/routers => ./routers
+	"github.com/EDDYCJY/go-gin-example/pkg/logging" => ./pkg/logging
+
 )
