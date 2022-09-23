@@ -5,8 +5,12 @@ import (
 	"github.com/EDDYCJY/go-gin-example/routers/api"
 	v1 "github.com/EDDYCJY/go-gin-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
 
 	"github.com/EDDYCJY/go-gin-example/pkg/setting"
+
+	_ "github.com/EDDYCJY/go-gin-example/docs"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitRouter() *gin.Engine {
@@ -20,6 +24,9 @@ func InitRouter() *gin.Engine {
 
 	//获取token方法
 	r.GET("/auth", api.GetAuth)
+
+	//swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//路由分组 127.0.0.1:8000/api/v1
 	//"relativePath" 中为分组路径，与文件夹无关

@@ -13,7 +13,13 @@ import (
 	"net/http"
 )
 
-//获取多个文章标签
+// @Summary Get multiple article tags
+// @Produce  json
+// @Param name query string false "Name"
+// @Param state query int false "State"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/tags [get]
 func GetTags(c *gin.Context) {
 	name := c.Query("name")
 
@@ -42,7 +48,14 @@ func GetTags(c *gin.Context) {
 	})
 }
 
-//新增文章标签
+// @Summary Add article tag
+// @Produce  json
+// @Param name body string true "Name"
+// @Param state body int false "State"
+// @Param created_by body int false "CreatedBy"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
 
 	//com.StrTo : string -> MustInt() int
@@ -76,7 +89,15 @@ func AddTag(c *gin.Context) {
 	})
 }
 
-//修改文章标签
+// @Summary Update article tag
+// @Produce  json
+// @Param id path int true "ID"
+// @Param name body string true "Name"
+// @Param state body int false "State"
+// @Param modified_by body string true "ModifiedBy"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/tags/{id} [put]
 func EditTag(c *gin.Context) {
 	//// Param returns the value of the URL param.
 	//// It is a shortcut for c.Params.ByName(key)
@@ -130,7 +151,12 @@ func EditTag(c *gin.Context) {
 	})
 }
 
-//删除文章标签
+// @Summary Delete article tag
+// @Produce  json
+// @Param id path int true "ID"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/tags/{id} [delete]
 func DeleteTag(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
