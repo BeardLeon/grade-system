@@ -51,8 +51,8 @@ func GetTags(c *gin.Context) {
 // @Summary Add article tag
 // @Produce  json
 // @Param name body string true "Name"
-// @Param state body int false "State"
-// @Param created_by body int false "CreatedBy"
+// @Param state body int true "State"
+// @Param created_by body int true "CreatedBy"
 // @Success 200 {object} app.Response
 // @Failure 500 {object} app.Response
 // @Router /api/v1/tags [post]
@@ -73,7 +73,7 @@ func AddTag(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
-		//不存在该name 添加
+		//不存在该name 则添加信息添加
 		if !models.ExistTagByName(name) {
 			code = e.SUCCESS
 			models.AddTag(name, state, createdBy)

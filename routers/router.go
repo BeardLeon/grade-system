@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"github.com/EDDYCJY/go-gin-example/middleware/jwt"
 	"github.com/EDDYCJY/go-gin-example/routers/api"
 	v1 "github.com/EDDYCJY/go-gin-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
@@ -31,7 +30,7 @@ func InitRouter() *gin.Engine {
 	//路由分组 127.0.0.1:8000/api/v1
 	//"relativePath" 中为分组路径，与文件夹无关
 	apiv1 := r.Group("api/v1")
-	apiv1.Use(jwt.JWT())
+	//apiv1.Use(jwt.JWT())
 	{
 		//获取标签列表
 		apiv1.GET("/tags", v1.GetTags)
