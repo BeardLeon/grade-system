@@ -29,9 +29,14 @@ const (
 	FATAL
 )
 
-func init() {
-	filePath := getLogFileFullPath()
-	F = openLogFile(filePath)
+func Setup() {
+	var err error
+	filePath := getLogFilePath()
+	fileName := getLogFileName()
+	F, err = openLogFile(fileName, filePath)
+	if err != nil {
+		log.Fatalf("logging.Setup err : %v", err)
+	}
 
 	//创建一个新的日志记录器。
 	//F: 定义要写入日志数据的IO句柄

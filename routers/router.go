@@ -1,10 +1,12 @@
 package routers
 
 import (
+	"github.com/EDDYCJY/go-gin-example/pkg/upload"
 	"github.com/EDDYCJY/go-gin-example/routers/api"
 	v1 "github.com/EDDYCJY/go-gin-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
+	"net/http"
 
 	"github.com/EDDYCJY/go-gin-example/pkg/setting"
 
@@ -19,7 +21,10 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Recovery())
 
-	gin.SetMode(setting.RunMode)
+	gin.SetMode(setting.ServerSetting.RunMode)
+	//方法原型
+	//func (group *RouterGroup) StaticFS(relativePath string, fs http.FileSystem) IRoutes {
+	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 
 	//获取token方法
 	r.GET("/auth", api.GetAuth)
@@ -27,6 +32,8 @@ func InitRouter() *gin.Engine {
 	//swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	//UploadImage
+	r.POST("/upload", api.UploadImage)
 	//路由分组 127.0.0.1:8000/api/v1
 	//"relativePath" 中为分组路径，与文件夹无关
 	apiv1 := r.Group("api/v1")
