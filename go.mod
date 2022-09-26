@@ -26,6 +26,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
+	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -53,10 +54,12 @@ replace (
 	github.com/EDDYCJY/go-gin-example/middleware => ./middleware
 	github.com/EDDYCJY/go-gin-example/models => ./models
 	github.com/EDDYCJY/go-gin-example/pkg/e => ./pkg/e
+	github.com/EDDYCJY/go-gin-example/pkg/file => ./pkg/file
 	github.com/EDDYCJY/go-gin-example/pkg/logging => ./pkg/logging
 	github.com/EDDYCJY/go-gin-example/pkg/setting => ./pkg/setting
+	github.com/EDDYCJY/go-gin-example/pkg/upload => ./pkg/upload
 	github.com/EDDYCJY/go-gin-example/pkg/util => ./pkg/util
 	github.com/EDDYCJY/go-gin-example/routers => ./routers
-	github.com/EDDYCJY/go-gin-example/pkg/file => ./pkg/file
-	github.com/EDDYCJY/go-gin-example/pkg/upload => ./pkg/upload
+	github.com/EDDYCJY/go-gin-example/service/article_service => ./service/article_service
+	github.com/EDDYCJY/go-gin-example/service/cache_service => ./service/cache_service
 )

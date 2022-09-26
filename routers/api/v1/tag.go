@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/EDDYCJY/go-gin-example/models"
+	"github.com/EDDYCJY/go-gin-example/pkg/app"
 	"github.com/EDDYCJY/go-gin-example/pkg/e"
 	"github.com/EDDYCJY/go-gin-example/pkg/setting"
 	"github.com/EDDYCJY/go-gin-example/pkg/util"
@@ -21,8 +22,8 @@ import (
 // @Failure 500 {object} app.Response
 // @Router /api/v1/tags [get]
 func GetTags(c *gin.Context) {
+	appG := app.Gin{c}
 	name := c.Query("name")
-
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
@@ -36,16 +37,19 @@ func GetTags(c *gin.Context) {
 		maps["state"] = state
 	}
 
-	code := e.SUCCESS
+	var err error
+	data["lists"], err = models.GetTags(util.GetPage(c), setting.AppSetting.PageSize, maps)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_TAGS_FAIL, nil)
+		return
+	}
+	data["total"], err = models.GetTagTotal(maps)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_COUNT_TAG_FAIL, nil)
+		return
+	}
 
-	data["lists"] = models.GetTags(util.GetPage(c), setting.AppSetting.PageSize, maps)
-	data["total"] = models.GetTagTotal(maps)
-
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary Add article tag
@@ -57,7 +61,7 @@ func GetTags(c *gin.Context) {
 // @Failure 500 {object} app.Response
 // @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
-
+	appG := app.Gin{c}
 	//com.StrTo : string -> MustInt() int
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
@@ -71,22 +75,29 @@ func AddTag(c *gin.Context) {
 	valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100字符")
 	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		//不存在该name 则添加信息添加
-		if !models.ExistTagByName(name) {
-			code = e.SUCCESS
-			models.AddTag(name, state, createdBy)
-		} else {
-			code = e.ERROR_EXIST_TAG
-		}
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusInternalServerError, e.INVALID_PARAMS, nil)
+		return
+	}
+	exists, err := models.ExistTagByName(name)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG_FAIL, nil)
+		return
+	}
+	//已存在，无法添加
+	if exists {
+		appG.Response(http.StatusOK, e.ERROR_EXIST_TAG, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]string),
-	})
+	err = models.AddTag(name, state, createdBy)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_TAG_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
 
 // @Summary Update article tag
@@ -105,6 +116,8 @@ func EditTag(c *gin.Context) {
 	////         // a GET request to /user/john
 	////         id := c.Param("id") // id == "john"
 	////     })
+	appG := app.Gin{c}
+
 	id := com.StrTo(c.Param("id")).MustInt()
 	name := c.Query("name")
 	modifiedBy := c.Query("modified_by")
@@ -118,37 +131,42 @@ func EditTag(c *gin.Context) {
 		//检查state这个对象  key: "state" string
 		valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 	}
-
 	//key是传递参数中的名字
 	valid.Required(id, "id").Message("ID不能为空")
 	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
 	valid.MaxSize(modifiedBy, 100, "modified_by").Message("修改人最长为100字符")
 	valid.MaxSize(name, 100, "name").Message("名词最长为100字符")
-
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		code = e.SUCCESS
-		if models.ExistTagByID(id) {
-			data := make(map[string]interface{})
-			data["modified_by"] = modifiedBy
-			if name != "" {
-				data["name"] = name
-			}
-			if state != -1 {
-				data["state"] = state
-			}
-
-			models.EditTag(id, data)
-		} else {
-			code = e.ERROR_NOT_EXIST_TAG
-		}
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusInternalServerError, e.INVALID_PARAMS, nil)
+		return
+	}
+	exists, err := models.ExistTagByID(id)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG_FAIL, nil)
+		return
+	}
+	if !exists {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_TAG, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]interface{}),
-	})
+	data := make(map[string]interface{})
+	data["modified_by"] = modifiedBy
+	if name != "" {
+		data["name"] = name
+	}
+	if state != -1 {
+		data["state"] = state
+	}
+
+	err = models.EditTag(id, data)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_TAG_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
 
 // @Summary Delete article tag
@@ -158,24 +176,32 @@ func EditTag(c *gin.Context) {
 // @Failure 500 {object} app.Response
 // @Router /api/v1/tags/{id} [delete]
 func DeleteTag(c *gin.Context) {
+	appG := app.Gin{c}
 	id := com.StrTo(c.Param("id")).MustInt()
 
 	valid := validation.Validation{}
 	valid.Min(id, 1, "id").Message("ID必须大于0")
-
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		code = e.SUCCESS
-		if models.ExistTagByID(id) {
-			models.DeleteTag(id)
-		} else {
-			code = e.ERROR_NOT_EXIST_TAG
-		}
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
+	}
+	exists, err := models.ExistTagByID(id)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG_FAIL, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]string),
-	})
+	if !exists {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_TAG, nil)
+		return
+	}
+
+	err = models.DeleteTag(id)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_DELETE_TAG_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
