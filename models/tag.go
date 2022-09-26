@@ -11,19 +11,13 @@ type Tag struct {
 	State      int    `json:"state"`
 }
 
-//
-//func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
-//	scope.SetColumn("CreatedOn", time.Now().Unix())
-//
-//	return nil
-//}
-//
-//func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
-//	scope.SetColumn("ModifiedOn", time.Now().Unix())
-//
-//	return nil
-//}
-
+// @Summary Get multiple article tags
+// @Produce  json
+// @Param name query string false "Name"
+// @Param state query int false "State"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/tags [get]
 func GetTags(pageNum int, pageSize int, maps interface{}) ([]Tag, error) {
 	var (
 		tags []Tag

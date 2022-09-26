@@ -3,14 +3,17 @@ module github.com/EDDYCJY/go-gin-example
 go 1.18
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/astaxie/beego v1.12.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-ini/ini v1.67.0
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.16
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.6
+	github.com/tealeg/xlsx v1.0.5
 	github.com/unknwon/com v1.0.1
 )
 
@@ -26,7 +29,6 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -35,6 +37,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
@@ -54,6 +57,7 @@ replace (
 	github.com/EDDYCJY/go-gin-example/middleware => ./middleware
 	github.com/EDDYCJY/go-gin-example/models => ./models
 	github.com/EDDYCJY/go-gin-example/pkg/e => ./pkg/e
+	github.com/EDDYCJY/go-gin-example/pkg/export => ./pkg/export
 	github.com/EDDYCJY/go-gin-example/pkg/file => ./pkg/file
 	github.com/EDDYCJY/go-gin-example/pkg/logging => ./pkg/logging
 	github.com/EDDYCJY/go-gin-example/pkg/setting => ./pkg/setting
